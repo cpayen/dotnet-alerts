@@ -6,6 +6,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D1F59648-916
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common.csproj", "{430B656C-BA5D-4314-A96A-A03A6CAC1CFF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{0525AE5F-58A8-4A50-B24F-831C77619D77}"
+	ProjectSection(SolutionItems) = preProject
+		infra\docker-compose.yml = infra\docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
