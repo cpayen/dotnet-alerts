@@ -1,7 +1,12 @@
+using Common.MassTransit;
 using Seeder;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services => { services.AddHostedService<Worker>(); })
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices(services =>
+    {
+        services.AddMassTransitWithRabbitMq();
+        services.AddHostedService<Worker>();
+    })
     .Build();
 
 host.Run();
