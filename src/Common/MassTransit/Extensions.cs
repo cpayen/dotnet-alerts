@@ -27,10 +27,11 @@ public static class Extensions
                 });
 
                 cfg.ConfigureEndpoints(context);
+                cfg.UseMessageRetry((retryConfigurator) => 
+                    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5)));
             });
 
             configure.AddConsumers(Assembly.GetEntryAssembly());
-            //TODO: configure retry policy
         });
 
         return services;
