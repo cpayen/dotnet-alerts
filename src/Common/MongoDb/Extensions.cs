@@ -1,5 +1,4 @@
 ﻿using Common.Abstractions;
-using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
@@ -21,7 +20,7 @@ public static class Extensions
             var configuration = serviceProvider.GetService<IConfiguration>();
             var mongoDbSettings = 
                 configuration?.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>() 
-                ?? throw new ConfigurationException("Invalid MongoDB configuration");
+                ?? throw new InvalidOperationException("Invalid MongoDB configuration");
             
             var mongoClient = new MongoClient(mongoDbSettings.ConnectionString)
             {

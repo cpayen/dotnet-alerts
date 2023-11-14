@@ -16,7 +16,7 @@ public static class Extensions
                 var configuration = context.GetService<IConfiguration>();
                 var rabbitMqSettings =
                     configuration?.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>()
-                    ?? throw new ConfigurationException("Invalid Rabbit MQ configuration");
+                    ?? throw new InvalidOperationException("Invalid Rabbit MQ configuration");
 
                 Console.WriteLine(rabbitMqSettings.Host);
 
