@@ -1,0 +1,36 @@
+﻿@page "/Alerts"
+@using BlazorFrontend.Services
+@using BlazorFrontend.Entities
+
+<h3>Alerts</h3>
+
+<MudButton @onclick="LoadData">Load data</MudButton>
+
+<MudTable Items="@Data">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Level</MudTh>
+        <MudTh>Raised at</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.Id</MudTd>
+        <MudTd DataLabel="Sign">@context.Level</MudTd>
+        <MudTd DataLabel="Name">@context.RaisedAt</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Inject] private AlertsService AlertsService { get; set; } = null!;
+
+    private IEnumerable<Alert>? Data { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        Data = await AlertsService.LoadAlertsAsync();
+    }
+}

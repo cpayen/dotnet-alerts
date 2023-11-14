@@ -22,13 +22,7 @@ public static class Extensions
                 configuration?.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>() 
                 ?? throw new InvalidOperationException("Invalid MongoDB configuration");
             
-            var mongoClient = new MongoClient(mongoDbSettings.ConnectionString)
-            {
-                Settings =
-                {
-                    ConnectTimeout = TimeSpan.FromSeconds(5)
-                }
-            };
+            var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
             return mongoClient.GetDatabase(mongoDbSettings.DatabaseName);
         });
 
