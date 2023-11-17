@@ -2,27 +2,41 @@
 @using BlazorFrontend.Services
 @using BlazorFrontend.Entities
 
-<h3>Alerts</h3>
+@inject ILogger<Alerts> Logger;
+@inject ISnackbar Snackbar;
+@inject AlertsService AlertsService;
 
-<MudButton @onclick="LoadData">Load data</MudButton>
-
-<MudTable Items="@Data">
-    <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>Level</MudTh>
-        <MudTh>Raised at</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Nr">@context.Id</MudTd>
-        <MudTd DataLabel="Sign">@context.Level</MudTd>
-        <MudTd DataLabel="Name">@context.RaisedAt</MudTd>
-    </RowTemplate>
-</MudTable>
+<MudContainer Style="margin-top: 50px;">
+    <MudTable Items="@Data" Loading="Loading" CustomHeader="true">
+        <HeaderContent>
+            <MudTHeadRow>
+                <MudTh colspan="2" Style="text-align: right">
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Refresh" Color="Color.Primary" @onclick="LoadData">Reload data</MudButton>
+                </MudTh>
+            </MudTHeadRow>
+            <MudTHeadRow>
+                <MudTh>Level</MudTh>
+                <MudTh>Raised at</MudTh>
+            </MudTHeadRow>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudChip Size="Size.Small" Color="GetAlertLevelColor(context.Level)">@context.Level</MudChip>
+            </MudTd>
+            <MudTd>@context.RaisedAt</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No data to display...</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
 
 @code {
-    [Inject] private AlertsService AlertsService { get; set; } = null!;
-
-    private IEnumerable<Alert>? Data { get; set; }
+    private IEnumerable<Alert> Data { get; set; } = Array.Empty<Alert>();
+    private bool Loading { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
@@ -31,6 +45,29 @@
 
     private async Task LoadData()
     {
-        Data = await AlertsService.LoadAlertsAsync();
+        try
+        {
+            Loading = true;
+            Data = await AlertsService.LoadAlertsAsync() ?? Array.Empty<Alert>();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e.Message);
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            Snackbar.Add("An error occured while loading data", Severity.Error);
+        }
+        finally
+        {
+            Loading = false;
+        }
     }
+
+    private static Color GetAlertLevelColor(AlertLevel level) => level switch
+    {
+        AlertLevel.Low => Color.Info,
+        AlertLevel.Medium => Color.Warning,
+        AlertLevel.High => Color.Error,
+        AlertLevel.VeryHigh => Color.Error,
+        _ => Color.Default
+    };
 }
