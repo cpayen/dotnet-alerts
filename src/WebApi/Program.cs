@@ -1,6 +1,7 @@
 using Common.MassTransit;
 using Common.MongoDb;
 using WebApi.Entities;
+using WebApi.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services
     .AddMongo()
     .AddMongoRepository<Alert>(Constants.AlertCollection);
 
+builder.Services
+    .AddSingleton<MessageHub>()
+    .AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,5 +35,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<MessageHub>("/message-hub");
 
 app.Run();
