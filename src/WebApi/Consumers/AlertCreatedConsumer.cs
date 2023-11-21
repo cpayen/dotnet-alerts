@@ -33,7 +33,7 @@ public class AlertCreatedConsumer : IConsumer<AlertCreated>
             Level = (AlertLevel)message.Level
         };
 
-        await _hub.SendAlertsync(alert);
+        await _hub.SendAlertAsync(alert);
         await _repository.CreateAsync(alert);
     }
 }

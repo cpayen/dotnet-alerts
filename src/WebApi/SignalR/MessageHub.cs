@@ -5,7 +5,7 @@ namespace WebApi.SignalR;
 
 public class MessageHub : Hub
 {
-    public async Task SendAlertsync(Alert alert)
+    public async Task SendAlertAsync(Alert alert)
     {
         await Clients.All.SendAsync("ReceiveAlert", alert);
     }
