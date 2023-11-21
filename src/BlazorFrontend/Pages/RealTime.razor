@@ -1,10 +1,12 @@
 ﻿@page "/RealTime"
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorFrontend.Entities
+@using BlazorFrontend.Settings
+@inject ApiSettings ApiSettings;
 @inject ILogger<RealTime> Logger;
 @implements IAsyncDisposable
 
-<MudContainer Style="margin-top: 50px;">
+<MudContainer Style="margin-top: 30px;">
     <MudTable Items="@_filteredData">
         <HeaderContent>
             <MudTh>Raised at</MudTh>
@@ -30,12 +32,12 @@
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7202/message-hub") //TODO: Use configuration here
+            .WithUrl(ApiSettings.RealtimeEndpoint)
             .Build();
 
-        _hubConnection.On<Alert>("ReceiveAlert", (alert) => //TODO: Use configuration here
+        _hubConnection.On<Alert>(ApiSettings.RealtimeEvent, (alert) =>
         {
-            Logger.LogInformation($"ReceiveAlert: {alert.Level} {alert.RaisedAt}");
+            Logger.LogInformation($"{ApiSettings.RealtimeEvent}: {alert.Level} {alert.RaisedAt}");
             _data.Add(alert);
             _filteredData = _data.OrderByDescending(x => x.RaisedAt).Take(10).ToList();
             InvokeAsync(StateHasChanged);

@@ -1,4 +1,5 @@
 using BlazorFrontend.Services;
+using BlazorFrontend.Settings;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
+var apiSettings = 
+    builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>()
+    ?? throw new InvalidOperationException("Invalid API configuration");
+
+builder.Services.AddSingleton(apiSettings);
 builder.Services.AddSingleton<AlertsService>();
 
 var app = builder.Build();

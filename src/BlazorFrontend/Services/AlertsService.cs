@@ -3,21 +3,12 @@ using BlazorFrontend.Settings;
 
 namespace BlazorFrontend.Services;
 
-public class AlertsService
+public class AlertsService(ApiSettings apiSettings)
 {
-    private readonly HttpClient _httpClient;
-
-    public AlertsService(IConfiguration configuration)
+    private readonly HttpClient _httpClient = new()
     {
-        var apiSettings = 
-            configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>()
-            ?? throw new InvalidOperationException("Invalid API configuration");
-        
-        _httpClient = new HttpClient()
-        {
-            BaseAddress = new Uri(apiSettings.Url)
-        };
-    }
+        BaseAddress = new Uri(apiSettings.Url)
+    };
 
     public async Task<IEnumerable<Alert>?> LoadAlertsAsync()
     {
