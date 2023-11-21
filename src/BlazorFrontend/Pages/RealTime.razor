@@ -1,0 +1,60 @@
+﻿@page "/RealTime"
+@using Microsoft.AspNetCore.SignalR.Client
+@using BlazorFrontend.Entities
+@inject ILogger<RealTime> Logger;
+@implements IAsyncDisposable
+
+<MudContainer Style="margin-top: 50px;">
+    <MudTable Items="@_filteredData">
+        <HeaderContent>
+            <MudTh>Raised at</MudTh>
+            <MudTh>Level</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudChip Size="Size.Small" Color="GetAlertLevelColor(context.Level)">@context.Level</MudChip>
+            </MudTd>
+            <MudTd>@context.RaisedAt</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No data to display...</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private HubConnection? _hubConnection;
+    private readonly List<Alert> _data = new();
+    private List<Alert> _filteredData = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7202/message-hub") //TODO: Use configuration here
+            .Build();
+
+        _hubConnection.On<Alert>("ReceiveAlert", (alert) => //TODO: Use configuration here
+        {
+            Logger.LogInformation($"ReceiveAlert: {alert.Level} {alert.RaisedAt}");
+            _data.Add(alert);
+            _filteredData = _data.OrderByDescending(x => x.RaisedAt).Take(10).ToList();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection != null) await _hubConnection.DisposeAsync();
+    }
+
+    private static Color GetAlertLevelColor(AlertLevel level) => level switch
+    {
+        AlertLevel.Low => Color.Info,
+        AlertLevel.Medium => Color.Warning,
+        AlertLevel.High => Color.Error,
+        AlertLevel.VeryHigh => Color.Error,
+        _ => Color.Default
+    };
+}

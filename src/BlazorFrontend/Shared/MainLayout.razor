@@ -6,8 +6,11 @@
 
 <MudLayout>
     <MudAppBar>
-        <MudIcon Icon="@Icons.Material.Outlined.CrisisAlert" />
-        <h3 style="margin-left: 15px;">Alerts</h3>
+        <MudItem Class="d-flex align-center gap-4">
+            <MudIcon Icon="@Icons.Material.Outlined.CrisisAlert" Color="Color.Warning"/>
+            <MudButton Href="Alerts">Alerts</MudButton>
+            <MudButton Href="RealTime">Real-time</MudButton>
+        </MudItem>
         <MudSpacer/>
         <MudToggleIconButton
             @bind-Toggled="@_isDarkMode"
